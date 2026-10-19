@@ -5,12 +5,30 @@ export default {
   description:
     "Calls and WhatsApp threads answered in English, Spanish and Catalan. Reservations are checked against your live floor plan before they are confirmed.",
   nav: [
+    { label: "Try it", href: "#try" },
     { label: "Mechanics", href: "#mechanics" },
     { label: "Voice", href: "#voice" },
     { label: "Dashboard", href: "#dashboard" },
     { label: "Questions", href: "#faq" },
   ],
   cta: { label: "Book a demo", subject: "Kadensio for Hospitality: demo" },
+  // The interactive demo. It runs the production reservation questions on a sample venue.
+  demo: {
+    id: "try",
+    h2: "Try it now. Book a table.",
+    lead: "Pick a language, then book a table the way a guest would. The assistant asks the same questions it asks on WhatsApp, then you see the reservation the host receives.",
+    venue: "Cal Demo Gràcia",
+    threadLabel: "Conversation with the Kadensio assistant",
+    inputLabel: "Your answer",
+    placeholder: "Type your answer",
+    send: "Send",
+    start: "Start the demo",
+    resultHeading: "What your host receives",
+    empty: "Finish the reservation and the booking appears here: party size, date, shift, zone and whether the venue needs to confirm it.",
+    nextLabel: "Next step.",
+    again: "Run it again",
+    note: "The demo uses a sample venue and a sample floor plan that always has room. Live, the slot is checked against your floor plan first. Nothing from this demo is stored or sent to anyone.",
+  },
   hero: {
     eyebrow: "For hospitality groups and restaurants",
     h1: "Every call and WhatsApp thread answered. Every table real.",

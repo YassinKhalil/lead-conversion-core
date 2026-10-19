@@ -9,6 +9,8 @@ import { healthRoutes } from './routes/health.js';
 import { internalRoutes } from './routes/internal.js';
 import { leadIngressRoutes } from './routes/lead-ingress.js';
 import { metaWebhookRoutes } from './routes/meta-webhooks.js';
+import { demoRoutes } from './routes/public-demo.js';
+import { hospitalityDemoRoutes } from './routes/public-demo-hospitality.js';
 import { waitlistRoutes } from './routes/waitlist.js';
 
 function requiresRawWebhookBody(method: string, url: string): boolean {
@@ -74,6 +76,8 @@ export async function buildApp() {
   await app.register(leadIngressRoutes);
   await app.register(metaWebhookRoutes);
   await app.register(waitlistRoutes);
+  await app.register(demoRoutes);
+  await app.register(hospitalityDemoRoutes);
   if (env.DASHBOARD_API_ENABLED) {
     await app.register(dashboardRoutes);
   }

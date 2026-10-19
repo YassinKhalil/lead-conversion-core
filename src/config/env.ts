@@ -43,6 +43,7 @@ const baseSchema = z.object({
   INBOUND_LEAD_CAPTURE_WINDOW_MS: z.coerce.number().int().positive().default(3_600_000),
   DASHBOARD_LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(5),
   DASHBOARD_LOGIN_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
+  DEMO_CHAT_ENABLED: booleanString.default('false'),
   WAITLIST_SIGNUP_ENABLED: booleanString.default('false'),
   WAITLIST_SIGNUP_IP_LIMIT: z.coerce.number().int().positive().default(5),
   WAITLIST_SIGNUP_IP_WINDOW_MS: z.coerce.number().int().positive().default(3_600_000),

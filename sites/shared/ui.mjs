@@ -97,9 +97,11 @@ export function hero(site, { gateways = false } = {}) {
       ).join("")}
     </div>`
     : "";
-  const actions = site.cta
-    ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="${demoHref(site)}">${esc(site.cta.label)} ${arrowIcon}</a></div>`
-    : "";
+  const actions = site.demo
+    ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="#${esc(site.demo.id)}">Try it now ${arrowIcon}</a><a class="link-arrow link-lg" href="${demoHref(site)}">${esc(site.cta.label)}</a></div>`
+    : site.cta
+      ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="${demoHref(site)}">${esc(site.cta.label)} ${arrowIcon}</a></div>`
+      : "";
   return `<section class="hero" id="top">
   <div class="wrap">
     <p class="eyebrow">${esc(h.eyebrow)}</p>

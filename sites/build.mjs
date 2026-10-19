@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import root from "./copy/root.mjs";
 import realEstate from "./copy/real-estate.mjs";
 import hospitality from "./copy/hospitality.mjs";
+import { demoScript, demoSection } from "./shared/demo.mjs";
 import { bands, esc, closing, dataTable, faq, figure, gatewayBar, hero, ledger, mappingTable, page, pipeline, questions, section, rootHeader, verticalHeader } from "./shared/ui.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -51,16 +52,17 @@ function hospitalityMain(s) {
   const m = s.mechanics, v = s.voice, d = s.dashboard;
   return [
     hero(s),
+    demoSection(s.demo),
     section({
       ...m,
       body:
         pipeline(m.steps) +
         sub(m.questionsHeading, m.questionsLead, questions(m.questions) + `<p class="note">${esc(m.zonesNote)}</p>`) +
         sub(m.exampleHeading, m.exampleLead, dataTable({ caption: m.exampleCaption, head: m.exampleHead, rows: m.example })),
-      tint: true,
+      tint: false,
     }),
-    section({ ...v, body: ledger(v.rows) + `<p class="lead" style="margin-top:1.5rem">${esc(v.note)}</p>` }),
-    section({ ...d, body: ledger(d.rows), tint: true }),
+    section({ ...v, body: ledger(v.rows) + `<p class="lead" style="margin-top:1.5rem">${esc(v.note)}</p>`, tint: true }),
+    section({ ...d, body: ledger(d.rows), tint: false }),
     section({ ...s.faq, body: faq(s.faq.items) }),
     closing({ ...s.closing, primary: { label: s.cta.label, href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(s.cta.subject)}` } }),
   ].join("\n");
@@ -89,7 +91,7 @@ function realEstateMain(s) {
 
 function verticalPage(s, mainFn = hero) {
   const main = mainFn(s);
-  return page(s, { indexable, header: verticalHeader(s, liveNav(s.nav, main)), main });
+  return page(s, { indexable, header: verticalHeader(s, liveNav(s.nav, main)), main, extraBody: s.demo ? demoScript : "" });
 }
 
 const sites = [
@@ -103,14 +105,15 @@ const EXTRA_ASSETS = {
   "real-estate": ["product-queue-1280.jpg", "product-queue-2560.jpg"],
 };
 
-const css = ["base.css", "components.css"].map((f) => readFileSync(join(here, "shared", f), "utf8")).join("\n");
+const cssFor = (id) => ["base.css", "components.css", ...(id === "hospitality" ? ["demo.css"] : [])]
+  .map((f) => readFileSync(join(here, "shared", f), "utf8")).join("\n");
 
 rmSync(dist, { recursive: true, force: true });
 for (const [id, html] of sites) {
   const out = join(dist, id);
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "index.html"), html);
-  writeFileSync(join(out, "styles.css"), css);
+  writeFileSync(join(out, "styles.css"), cssFor(id));
   // Fonts and logo marks come from the live landing, so there is one copy of the brand.
   cpSync(join(repo, "landing", "assets", "fonts"), join(out, "assets", "fonts"), { recursive: true });
   for (const f of ["kadensio-lockup.svg", "kadensio-lockup-reversed.svg", "kadensio-icon.svg", "kadensio-icon-small.svg"]) {
