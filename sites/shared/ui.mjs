@@ -11,6 +11,9 @@ const ICONS = `<svg width="0" height="0" style="position:absolute" aria-hidden="
 </svg>`;
 const arrowIcon = `<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>`;
 
+// First-party analytics (self-hosted Umami, served through /_a/ on each Kadensio host).
+const ANALYTICS = { root: "2ca5e8aa-a362-4730-8077-fbef2239586e", "real-estate": "b112ed47-fdf4-45ff-b8f7-50ab727c50ba", hospitality: "ac95c1a5-7983-439f-8d09-0117cbbec7f1", clinic: "9776f38b-81ba-41e7-94a8-0399ea1f0ce1" };
+
 export function head(site, { indexable }) {
   const url = ORIGINS[site.id] + "/";
   return `<head>
@@ -25,11 +28,18 @@ export function head(site, { indexable }) {
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${esc(site.title)}">
 <meta property="og:description" content="${esc(site.description)}">
+<meta property="og:image" content="${ORIGINS[site.id]}/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(site.title)}">
+<meta name="twitter:description" content="${esc(site.description)}">
+<meta name="twitter:image" content="${ORIGINS[site.id]}/assets/og.png">
 <meta name="theme-color" content="#0C1F1A">
 <link rel="icon" href="assets/kadensio-icon-small.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
-</head>`;
+${ANALYTICS[site.id] ? `<script defer src="/_a/a.js" data-website-id="${ANALYTICS[site.id]}"></script>\n` : ""}</head>`;
 }
 
 const logo = (href, label, h = 26) => `<a class="logo" href="${href}" aria-label="${esc(label)}">
@@ -47,34 +57,30 @@ const demoHref = (site) =>
 
 /** Root site: gateways live in the header (desktop) and a bottom bar (phone). */
 export function rootHeader(site, nav) {
-  const [a, b] = VERTICALS;
   return `<header class="site-header">
   <div class="wrap header-inner">
     ${logo("/", "Kadensio, home")}
     ${navLinks(nav)}
     <div class="header-gateways">
-      <a class="btn btn-ghost" href="${a.url}">${esc(a.name)} ${arrowIcon}</a>
-      <a class="btn btn-primary" href="${b.url}">${esc(b.name)} ${arrowIcon}</a>
+      ${VERTICALS.map((v, i) => `<a class="btn ${i === VERTICALS.length - 1 ? "btn-primary" : "btn-ghost"}" href="${v.url}">${esc(v.name)} ${arrowIcon}</a>`).join("\n      ")}
     </div>
   </div>
 </header>`;
 }
 
 export function gatewayBar() {
-  const [a, b] = VERTICALS;
-  return `<div class="gateway-bar" role="navigation" aria-label="Industries">
-  <a class="btn btn-ghost" href="${a.url}">${esc(a.name)}</a>
-  <a class="btn btn-primary" href="${b.url}">${esc(b.name)}</a>
+  return `<div class="gateway-bar" role="navigation" aria-label="Industries" style="--n:${VERTICALS.length}">
+  ${VERTICALS.map((v, i) => `<a class="btn ${i === VERTICALS.length - 1 ? "btn-primary" : "btn-ghost"}" href="${v.url}">${esc(v.name)}</a>`).join("\n  ")}
 </div>`;
 }
 
 /** Vertical sites: the way back to the platform is the first row of the sticky header. */
 export function verticalHeader(site, nav) {
-  const sibling = VERTICALS.find((v) => v.id !== site.id);
+  const siblings = VERTICALS.filter((v) => v.id !== site.id);
   return `<header class="site-header">
   <div class="parent-bar"><div class="wrap parent-bar-inner">
     <a class="parent-link" href="${PLATFORM_URL}"><span class="arrow" aria-hidden="true">←</span> ${esc(PLATFORM_LABEL)}</a>
-    <a class="sibling" href="${sibling.url}">${esc(sibling.name)} →</a>
+    <span class="siblings">${siblings.map((s) => `<a class="sibling" href="${s.url}">${esc(s.name)} →</a>`).join("")}</span>
   </div></div>
   <div class="wrap header-inner">
     ${logo(`${ORIGINS[site.id]}/`, "Kadensio " + (VERTICALS.find((v) => v.id === site.id)?.name ?? ""))}
@@ -87,7 +93,7 @@ export function verticalHeader(site, nav) {
 export function hero(site, { gateways = false } = {}) {
   const h = site.hero;
   const gw = gateways
-    ? `<div class="gateways" role="group" aria-label="${esc(h.gatewayHeading)}">${VERTICALS.map(
+    ? `<div class="gateways" role="group" aria-label="${esc(h.gatewayHeading)}" style="--n:${VERTICALS.length}">${VERTICALS.map(
         (v) => `
       <a class="gateway" href="${v.url}">
         <span class="gateway-host">${esc(v.host)}</span>
@@ -98,7 +104,7 @@ export function hero(site, { gateways = false } = {}) {
     </div>`
     : "";
   const actions = site.demo
-    ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="#${esc(site.demo.id)}">Try it now ${arrowIcon}</a><a class="link-arrow link-lg" href="${demoHref(site)}">${esc(site.cta.label)}</a></div>`
+    ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="#${esc(site.demo.id)}">Try it now ${arrowIcon}</a>${site.cta ? `<a class="link-arrow link-lg" href="${demoHref(site)}">${esc(site.cta.label)}</a>` : ""}</div>`
     : site.cta
       ? `<div class="hero-actions"><a class="btn btn-primary btn-lg" href="${demoHref(site)}">${esc(site.cta.label)} ${arrowIcon}</a></div>`
       : "";
@@ -136,8 +142,8 @@ export function mappingTable({ caption, head, rows, cta }) {
   const link = (v) => `<a href="${v.url}">${esc(v.name)}</a>`;
   return `<table class="mapping">
     <caption>${esc(caption)}</caption>
-    <thead><tr><th scope="col">${esc(head[0])}</th><th scope="col">${link(cta[0])}</th><th scope="col">${link(cta[1])}</th></tr></thead>
-    <tbody>${rows.map(([a, b, c]) => `<tr><th scope="row">${esc(a)}</th><td>${esc(b)}</td><td>${esc(c)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th scope="col">${esc(head[0])}</th>${cta.map((v) => `<th scope="col">${link(v)}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(([a, ...cells]) => `<tr><th scope="row">${esc(a)}</th>${cells.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
   </table>`;
 }
 
@@ -196,11 +202,11 @@ export function footer(site) {
   const platform = isRoot
     ? ""
     : `<a class="footer-platform" href="${PLATFORM_URL}"><span class="arrow" aria-hidden="true">←</span> Powered by ${esc(PLATFORM_LABEL)}</a>`;
-  const sibling = f.sibling ? VERTICALS.find((v) => v.id === f.sibling.id) : null;
+  const siblings = (f.siblings ?? []).map(({ id, label }) => ({ label, v: VERTICALS.find((x) => x.id === id) })).filter((s) => s.v);
   const gateways = isRoot
     ? `<p class="footer-gateways">${VERTICALS.map((v) => `<a href="${v.url}">${esc(v.name)} →</a>`).join("")}</p>`
-    : sibling
-      ? `<p class="footer-gateways"><a href="${sibling.url}">${esc(f.sibling.label)} →</a></p>`
+    : siblings.length
+      ? `<p class="footer-gateways">${siblings.map((s) => `<a href="${s.v.url}">${esc(s.label)} →</a>`).join("")}</p>`
       : "";
   const legal = (f.legal ?? [
     ["Privacy Policy", `${ORIGINS.root}/privacy.html`],

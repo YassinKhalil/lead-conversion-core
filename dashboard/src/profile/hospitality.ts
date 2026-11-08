@@ -37,7 +37,7 @@ export const hospitality: TenantProfile = {
   ],
   qualificationTitle: 'Reservation details',
   qualificationEmptyDetail: 'Details appear here as the conversation works through the reservation sequence.',
-  features: { openingLine: false, currency: false, reservations: true },
+  features: { openingLine: false, currency: false, reservations: true, appointments: false },
   list: {
     wantColumn: 'What they asked for',
     leadColumn: 'Guest',

@@ -46,14 +46,15 @@ html { scroll-padding-top: 8rem; }
 .parent-link:hover .arrow { transform: translateX(-3px); }
 .parent-bar .sibling { color: var(--ink-3); text-decoration: none; }
 .parent-bar .sibling:hover { color: var(--ink); }
-@media (max-width: 559px) { .parent-bar .sibling { display: none; } }
+.parent-bar .siblings { display: flex; gap: 1.25rem; }
+@media (max-width: 559px) { .parent-bar .siblings { display: none; } }
 .footer-platform { display: inline-flex; gap: .5rem; align-items: center; color: var(--ink); font-weight: 550; text-decoration: none; margin-bottom: .75rem; }
 .footer-platform .arrow { color: var(--accent); }
 `;
 
 const PARENT_BAR = `  <div class="parent-bar"><div class="wrap parent-bar-inner">
     <a class="parent-link" href="${PLATFORM_URL}"><span class="arrow" aria-hidden="true">←</span> ${PLATFORM_LABEL}</a>
-    <a class="sibling" href="${ORIGINS.hospitality}">Hospitality →</a>
+    <span class="siblings"><a class="sibling" href="${ORIGINS.hospitality}">Hospitality →</a><a class="sibling" href="${ORIGINS.clinic}">Dental Clinics →</a></span>
   </div></div>
 `;
 const FOOTER_LINK = `<a class="footer-platform" href="${PLATFORM_URL}"><span class="arrow" aria-hidden="true">←</span> Powered by ${PLATFORM_LABEL}</a>

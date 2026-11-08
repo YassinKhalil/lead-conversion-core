@@ -290,6 +290,40 @@ export interface DashboardSummary {
   leadsBySource: { source: string; count: number }[];
 }
 
+export type AppointmentStatus = 'pending' | 'booked' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+
+/** One appointment as `GET /api/appointments` returns it. Service, patient type and urgency are stored values. */
+export interface Appointment {
+  appointmentId: string;
+  leadId: string;
+  patientName: string;
+  patientPhone: string;
+  /** YYYY-MM-DD in the appointment's own timezone. */
+  date: string;
+  startsAt: string;
+  endsAt: string;
+  timezone: string;
+  status: AppointmentStatus | string;
+  service: string;
+  patientType: string;
+  urgency: string;
+  coordinatorName: string;
+  createdAt: string;
+}
+
+export interface AppointmentPage {
+  appointments: Appointment[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AppointmentFilters {
+  status?: AppointmentStatus[];
+  from?: string;
+  to?: string;
+}
+
 export type ReservationStatus = 'requested' | 'confirmed' | 'cancelled' | 'no_show' | 'seated' | 'completed';
 
 /** One reservation as `GET /api/reservations` returns it. Labels are the venue's English ones. */

@@ -34,7 +34,9 @@
     "backup:postgres": "scripts/backup/backup-postgres.sh",
     "restore:postgres": "scripts/backup/restore-postgres.sh",
     "tenant:hospitality": "tsx scripts/provision-hospitality-tenant.ts",
-    "tenant:hospitality:prod": "node dist/scripts/provision-hospitality-tenant.js"
+    "tenant:hospitality:prod": "node dist/scripts/provision-hospitality-tenant.js",
+    "tenant:clinic": "tsx scripts/provision-clinic-tenant.ts",
+    "tenant:clinic:prod": "node dist/scripts/provision-clinic-tenant.js"
   },
   "dependencies": {
     "@fastify/rate-limit": "^10.3.0",

@@ -36,6 +36,14 @@ export function navItems(profile: TenantProfile = realEstate): NavItem[] {
       roles: ['salesperson', 'manager', 'admin'],
     });
   }
+  // Appointments exist for clinic tenants only, on the same terms as reservations.
+  if (profile.features.appointments) {
+    items.splice(items.findIndex((item) => item.href === '/notifications'), 0, {
+      href: '/appointments',
+      label: 'Appointments',
+      roles: ['salesperson', 'manager', 'admin'],
+    });
+  }
   return items;
 }
 

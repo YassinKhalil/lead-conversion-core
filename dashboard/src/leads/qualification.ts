@@ -1,6 +1,7 @@
 // Relative, not '@/': the root test suite imports this file directly.
 import type { QualificationAnswer } from '../api/types';
 import { realEstate } from '../profile/real-estate';
+import { valueLabel } from './labels';
 import type { TenantProfile } from '../profile/types';
 
 export const QUESTION = {
@@ -171,7 +172,7 @@ export function fourFacts(answers: AnswerIndex, currency = '', profile: TenantPr
       const shown = profile.features.currency ? currency : '';
       return { label: fact.label, value: budget ? formatBudget(budget, shown) : '', numeric: fact.numeric };
     }
-    return { label: fact.label, value: valueOf(answers, fact.key), numeric: fact.numeric };
+    return { label: fact.label, value: valueLabel(fact.key, valueOf(answers, fact.key), profile), numeric: fact.numeric };
   });
 }
 
@@ -201,7 +202,7 @@ export function summaryLine(answers: AnswerIndex, profile: TenantProfile = realE
         const budget = budgetValue(answers);
         return budget ? formatBudgetCompact(budget) : '';
       }
-      const value = valueOf(answers, part.key);
+      const value = valueLabel(part.key, valueOf(answers, part.key), profile);
       if (value && part.unit && /^\d+$/.test(value)) return `${value} ${value === '1' ? part.unit[0] : part.unit[1]}`;
       return value;
     })

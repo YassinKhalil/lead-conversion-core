@@ -1,13 +1,15 @@
+import { clinic } from './clinic';
 import { hospitality } from './hospitality';
 import { realEstate } from './real-estate';
 import type { TenantProfile, VerticalId } from './types';
 
 export type { FactSpec, ListCopy, ManageCopy, SummaryPart, TenantProfile, Terms, VerticalId } from './types';
-export { hospitality, realEstate };
+export { clinic, hospitality, realEstate };
 
 export const PROFILES: Record<VerticalId, TenantProfile> = {
   real_estate: realEstate,
   hospitality,
+  clinic,
 };
 
 export const DEFAULT_VERTICAL: VerticalId = 'real_estate';

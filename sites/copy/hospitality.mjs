@@ -17,14 +17,20 @@ export default {
     id: "try",
     h2: "Try it now. Book a table.",
     lead: "Pick a language, then book a table the way a guest would. The assistant asks the same questions it asks on WhatsApp, then you see the reservation the host receives.",
-    venue: "Cal Demo Gràcia",
+    verticals: [
+      {
+        id: "hospitality",
+        endpoint: "/api/demo/turn",
+        venue: "Cal Gràcia",
+        start: "Start the demo",
+        resultHeading: "What your host receives",
+        empty: "Finish the reservation and the booking appears here: party size, date, shift, zone and whether the venue needs to confirm it.",
+      },
+    ],
     threadLabel: "Conversation with the Kadensio assistant",
     inputLabel: "Your answer",
     placeholder: "Type your answer",
     send: "Send",
-    start: "Start the demo",
-    resultHeading: "What your host receives",
-    empty: "Finish the reservation and the booking appears here: party size, date, shift, zone and whether the venue needs to confirm it.",
     nextLabel: "Next step.",
     again: "Run it again",
     note: "The demo uses a sample venue and a sample floor plan that always has room. Live, the slot is checked against your floor plan first. Nothing from this demo is stored or sent to anyone.",
@@ -122,6 +128,9 @@ export default {
   },
   footer: {
     meta: "Reservations by phone and WhatsApp for hospitality groups and restaurants.",
-    sibling: { label: "Also built for real estate", id: "real-estate" },
+    siblings: [
+      { label: "Also built for real estate", id: "real-estate" },
+      { label: "Also built for dental clinics", id: "clinic" },
+    ],
   },
 };

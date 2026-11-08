@@ -1,0 +1,95 @@
+{
+  "clientKey": "demo-dental",
+  "clientRecordId": "recDENTDEMO000001",
+  "companyName": "Demo Dental Clinic",
+  "timezone": "Africa/Cairo",
+  "managerPhoneE164": "+201000000000",
+  "whatsapp": {
+    "phoneNumberId": "REPLACE_WITH_META_PHONE_NUMBER_ID",
+    "directSendEnabled": false
+  },
+  "languages": [
+    "English",
+    "Arabic"
+  ],
+  "clinic": {
+    "name": "Demo Dental Clinic, Maadi",
+    "location": "Cairo",
+    "mapsUrl": "https://maps.app.goo.gl/REPLACE"
+  },
+  "services": [
+    {
+      "key": "consultation",
+      "labels": {
+        "English": "Consultation",
+        "Arabic": "استشارة"
+      }
+    },
+    {
+      "key": "checkup",
+      "labels": {
+        "English": "Check-up",
+        "Arabic": "كشف"
+      }
+    },
+    {
+      "key": "cleaning",
+      "labels": {
+        "English": "Cleaning",
+        "Arabic": "تنضيف أسنان"
+      }
+    },
+    {
+      "key": "filling",
+      "labels": {
+        "English": "Filling",
+        "Arabic": "حشو"
+      }
+    },
+    {
+      "key": "whitening",
+      "labels": {
+        "English": "Whitening",
+        "Arabic": "تبييض"
+      }
+    },
+    {
+      "key": "braces",
+      "labels": {
+        "English": "Braces",
+        "Arabic": "تقويم"
+      }
+    },
+    {
+      "key": "implants",
+      "labels": {
+        "English": "Implants",
+        "Arabic": "زراعة أسنان"
+      }
+    },
+    {
+      "key": "other",
+      "labels": {
+        "English": "Something else",
+        "Arabic": "حاجة تانية"
+      }
+    }
+  ],
+  "appointmentHours": [
+    "10:00",
+    "11:30",
+    "13:00",
+    "16:00",
+    "17:30",
+    "19:00"
+  ],
+  "closedDays": [
+    "Friday"
+  ],
+  "coordinators": [
+    {
+      "name": "Mona",
+      "phoneE164": "+201111111111"
+    }
+  ]
+}

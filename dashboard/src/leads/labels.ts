@@ -12,6 +12,11 @@ export function questionLabel(key: string, profile: TenantProfile = realEstate):
   return profile.questionLabels[key] ?? humanise(key.replace(/^q_/, ''));
 }
 
+/** A stored answer value in words, when the profile has words for it; otherwise the value as stored. */
+export function valueLabel(key: string, value: string, profile: TenantProfile = realEstate): string {
+  return profile.valueLabels?.[key]?.[value] ?? value;
+}
+
 export function factorLabel(key: string, profile: TenantProfile = realEstate): string {
   return profile.factorLabels[key] ?? humanise(key);
 }

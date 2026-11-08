@@ -9,6 +9,8 @@ import type {
   Message,
   Notification,
   Project,
+  AppointmentFilters,
+  AppointmentPage,
   Reservation,
   ReservationFilters,
   ReservationPage,
@@ -249,4 +251,15 @@ export async function setReservationStatus(reservationId: string, status: 'seate
     method: 'POST',
     body: { status },
   });
+}
+
+export async function listAppointments(filters: AppointmentFilters, page: { limit: number; offset: number }) {
+  const query = buildQuery({
+    status: filters.status?.join(','),
+    from: filters.from,
+    to: filters.to,
+    limit: page.limit,
+    offset: page.offset,
+  });
+  return request<{ ok: true } & AppointmentPage>(`/api/appointments${query}`);
 }

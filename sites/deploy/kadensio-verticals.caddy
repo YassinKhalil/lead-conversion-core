@@ -1,4 +1,4 @@
-# real-estate.kadensio.com and hospitality.kadensio.com (static sites, built by sites/build.mjs).
+# real-estate., hospitality. and clinic.kadensio.com (static sites, built by sites/build.mjs).
 # Installed to /etc/caddy/sites/ by sites/deploy/publish.sh once DNS resolves.
 
 (kadensio_static) {
@@ -13,6 +13,7 @@
 }
 
 real-estate.kadensio.com {
+	import umami_collect
 	# The waitlist form on the landing posts here; the API serves it at /public/waitlist.
 	handle /api/waitlist {
 		rewrite * /public/waitlist
@@ -38,6 +39,7 @@ real-estate.kadensio.com {
 }
 
 hospitality.kadensio.com {
+	import umami_collect
 	# The "Try it now" demo on the page. Stateless: runs the engine, stores nothing.
 	handle /api/demo/turn {
 		rewrite * /public/demo/hospitality/turn
@@ -46,6 +48,21 @@ hospitality.kadensio.com {
 
 	handle {
 		root * /var/www/kadensio-hospitality/current
+		file_server
+		import kadensio_static
+	}
+}
+
+clinic.kadensio.com {
+	import umami_collect
+	# The "Try it now" demo on the page. Stateless: runs the engine and scorer, stores nothing.
+	handle /api/demo/turn {
+		rewrite * /public/demo/clinic/turn
+		reverse_proxy 127.0.0.1:8084
+	}
+
+	handle {
+		root * /var/www/kadensio-clinic/current
 		file_server
 		import kadensio_static
 	}

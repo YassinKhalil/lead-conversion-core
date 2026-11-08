@@ -59,7 +59,7 @@ export default function Login() {
         label="Email"
         error={errors.email?.message}
         inputProps={{
-          placeholder: 'you@brokerage.com',
+          placeholder: 'you@company.com',
           autoCapitalize: 'none',
           autoComplete: 'email',
           autoCorrect: false,

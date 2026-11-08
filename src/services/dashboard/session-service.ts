@@ -28,7 +28,7 @@ interface UserRow {
   name: string;
   role: DashboardRole;
   client_key: string;
-  vertical: 'real_estate' | 'hospitality';
+  vertical: 'real_estate' | 'hospitality' | 'clinic';
   company_name: string;
   timezone: string;
   last_login_at: Date | null;

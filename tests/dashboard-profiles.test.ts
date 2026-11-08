@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Lead, Role } from '../dashboard/src/api/types.js';
-import { eventLabel, factorLabel, PIPELINE_STAGES, questionLabel, stageLabel } from '../dashboard/src/leads/labels.js';
+import { eventLabel, factorLabel, PIPELINE_STAGES, questionLabel, stageLabel, valueLabel } from '../dashboard/src/leads/labels.js';
 import { fourFacts, indexAnswerMap, summaryLine } from '../dashboard/src/leads/qualification.js';
 import { rowSummary } from '../dashboard/src/leads/queue.js';
 import { navFor } from '../dashboard/src/nav/routes.js';
-import { hospitality, PROFILES, realEstate, resolveProfile } from '../dashboard/src/profile/index.js';
+import { clinic, hospitality, PROFILES, realEstate, resolveProfile } from '../dashboard/src/profile/index.js';
 import { words } from '../dashboard/src/profile/words.js';
 
 const values = (o: object): string[] => Object.values(o) as string[];
@@ -104,6 +104,43 @@ describe('hospitality profile re-labels without changing behaviour', () => {
   });
 });
 
+describe('clinic profile re-labels without changing behaviour', () => {
+  const answers = indexAnswerMap({ q_service: 'cleaning', q_patient_type: 'new', q_urgency: 'this_week', q_time_pref: 'morning' });
+
+  it('turns stored answer values into words in the four facts and the summary line', () => {
+    expect(fourFacts(answers, 'EGP', clinic)).toEqual([
+      { label: 'Treatment', value: 'Cleaning', numeric: false },
+      { label: 'Patient', value: 'New patient', numeric: false },
+      { label: 'How soon', value: 'This week', numeric: false },
+      { label: 'Time of day', value: 'Morning', numeric: false },
+    ]);
+    expect(summaryLine(answers, clinic)).toBe('Cleaning · New patient · This week · Morning');
+    expect(valueLabel('q_urgency', 'something_else', clinic)).toBe('something_else');
+    expect(valueLabel('q_urgency', 'asap')).toBe('asap');
+  });
+
+  it('labels navigation, stages and events in its own words, with the appointments screen', () => {
+    expect(navFor('manager', clinic).map((i) => i.label)).toEqual(['Overview', 'Patients', 'Coordinators', 'Clinics', 'Appointments', 'Notifications']);
+    expect(stageLabel('site_visit_scheduled', clinic)).toBe('Appointment booked');
+    expect(eventLabel('salesperson.appointment_booked_notification', clinic)).toBe('Appointment booked');
+    expect(questionLabel('q_urgency', clinic)).toBe('How soon');
+    expect(factorLabel('urgency', clinic)).toBe('How soon');
+  });
+
+  it('keeps routes, roles and stage values identical across profiles, plus the one screen only clinics have', () => {
+    const shape = (p: typeof realEstate) => navFor('admin', p).map((i) => `${i.href}:${i.roles.join('|')}`);
+    expect(shape(clinic).filter((entry) => !entry.startsWith('/appointments:'))).toEqual(shape(realEstate));
+    expect(shape(clinic).filter((entry) => entry.startsWith('/appointments:'))).toHaveLength(1);
+    expect(Object.keys(clinic.stageLabels)).toEqual([...PIPELINE_STAGES]);
+  });
+
+  it('only clinics get the appointments screen, only hospitality the reservations screen', () => {
+    expect(Object.values(PROFILES).map((p) => [p.vertical, p.features.appointments, p.features.reservations])).toEqual([
+      ['real_estate', false, false], ['hospitality', false, true], ['clinic', true, false],
+    ]);
+  });
+});
+
 describe('profiles are complete and do not leak into each other', () => {
   it('define the same keys, so a screen cannot meet a missing label', () => {
     for (const p of Object.values(PROFILES)) {
@@ -126,6 +163,16 @@ describe('profiles are complete and do not leak into each other', () => {
     for (const text of allText(realEstate)) expect(text, text).not.toMatch(banned);
   });
 
+  it('keeps real estate and hospitality words out of the clinic', () => {
+    const banned = /\b(leads?|budget|unit|units|viewings?|brokers?|brokerage|salespeople|salesperson|projects?|site visit|developments?|guests?|reservations?|venues?|hosts?|party size|zones?|seated|restaurants?)\b/i;
+    for (const text of [...allText(clinic), ...Object.values(clinic.valueLabels ?? {}).flatMap(values)]) expect(text, text).not.toMatch(banned);
+  });
+
+  it('keeps clinic words out of the other profiles', () => {
+    const banned = /\b(patients?|clinics?|coordinators?|appointments?|attended)\b/i;
+    for (const p of [realEstate, hospitality]) for (const text of allText(p)) expect(text, text).not.toMatch(banned);
+  });
+
   it('has no key for the panels that must look the same in every vertical', () => {
     for (const p of Object.values(PROFILES)) {
       expect(Object.keys(p).filter((k) => /chat|audio|handoff|takeover|temperature|urgency/i.test(k))).toEqual([]);
@@ -138,6 +185,11 @@ describe('resolveProfile', () => {
     expect(resolveProfile({ clientKey: 'anything' })).toBe(realEstate);
     expect(resolveProfile(null)).toBe(realEstate);
     expect(resolveProfile(undefined)).toBe(realEstate);
+  });
+
+  it('resolves the clinic from the vertical the API sends', () => {
+    expect(resolveProfile({ clientKey: 'x', vertical: 'clinic' })).toBe(clinic);
+    expect(resolveProfile({ clientKey: 'x' }, 'clinic')).toBe(clinic);
   });
 
   it('prefers an override, then a vertical from the API', () => {

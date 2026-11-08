@@ -1,5 +1,6 @@
 import type { Db } from '../db/pool.js';
 import { AuditRepository } from '../infrastructure/runtime.js';
+import { scoreClinicLead } from '../domain/clinic-scoring.js';
 import { scoreRealEstateLead } from '../domain/lead-scoring.js';
 
 
@@ -28,11 +29,13 @@ export class LeadScoringService {
       current_stage: string;
       lead_score: number | null;
       temperature: string;
+      vertical: string;
     }>(
-      `SELECT lead_id, status, current_stage, lead_score, temperature
-       FROM app.leads
-       WHERE lead_id=$1
-       FOR UPDATE`,
+      `SELECT l.lead_id, l.status, l.current_stage, l.lead_score, l.temperature,
+              (SELECT c.vertical FROM app.clients c WHERE c.client_id=l.client_id) AS vertical
+       FROM app.leads l
+       WHERE l.lead_id=$1
+       FOR UPDATE OF l`,
       [input.leadId],
     );
     const leadRow = lead.rows[0];
@@ -63,7 +66,8 @@ export class LeadScoringService {
       ...Object.fromEntries(answers.rows.map((row) => [row.question_key, row.normalized_value])),
       ...(input.answers || {}),
     };
-    const result = scoreRealEstateLead({
+    const scorer = leadRow.vertical === 'clinic' ? scoreClinicLead : scoreRealEstateLead;
+    const result = scorer({
       leadStatus: leadRow.status,
       currentStage: leadRow.current_stage,
       answers: answerMap,

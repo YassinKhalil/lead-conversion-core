@@ -81,3 +81,8 @@
 }
 @media (prefers-reduced-motion: reduce) { .demo-opt, .bubble { transition: none; } .bubble-typing span { animation: none; opacity: .6; } }
 
+
+.demo-pick { margin: 0 0 1rem; font-size: 1.0625rem; color: var(--ink-2); text-align: center; padding: 0 1.25rem; }
+.demo-starts { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; padding: 0 1.25rem; }
+.demo-start { flex-direction: column; }
+@media (max-width: 479px) { .demo-starts { flex-direction: column; align-items: stretch; width: 100%; } }

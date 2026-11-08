@@ -126,6 +126,9 @@ export default {
   },
   footer: {
     meta: "WhatsApp lead qualification for real estate brokerages.",
-    sibling: { label: "Also built for hospitality", id: "hospitality" },
+    siblings: [
+      { label: "Also built for hospitality", id: "hospitality" },
+      { label: "Also built for dental clinics", id: "clinic" },
+    ],
   },
 };

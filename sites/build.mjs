@@ -1,4 +1,4 @@
-// Builds the three marketing sites into sites/dist/<site>/. No dependencies.
+// Builds the four marketing sites into sites/dist/<site>/. No dependencies.
 //
 //   node sites/build.mjs                 # noindex build, safe to preview
 //   SITES_INDEXABLE=1 node sites/build.mjs   # launch build
@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import root from "./copy/root.mjs";
 import realEstate from "./copy/real-estate.mjs";
 import hospitality from "./copy/hospitality.mjs";
+import clinic from "./copy/clinic.mjs";
 import { demoScript, demoSection } from "./shared/demo.mjs";
 import { bands, esc, closing, dataTable, faq, figure, gatewayBar, hero, ledger, mappingTable, page, pipeline, questions, section, rootHeader, verticalHeader } from "./shared/ui.mjs";
 
@@ -39,11 +40,12 @@ function rootPage() {
   const s = root;
   const main = [
     hero(s, { gateways: true }),
-    section({ ...s.architecture, body: pipeline(s.architecture.steps), tint: true }),
-    section({ ...s.guarantees, body: ledger(s.guarantees.rows) }),
-    section({ ...s.verticals, body: mappingTable(s.verticals), tint: true }),
+    demoSection(s.demo),
+    section({ ...s.architecture, body: pipeline(s.architecture.steps) }),
+    section({ ...s.guarantees, body: ledger(s.guarantees.rows), tint: true }),
+    section({ ...s.verticals, body: mappingTable(s.verticals) }),
   ].join("\n");
-  return page(s, { indexable, header: rootHeader(s, liveNav(s.nav, main)), main, extraBody: gatewayBar(), bodyClass: "has-gateway-bar" });
+  return page(s, { indexable, header: rootHeader(s, liveNav(s.nav, main)), main, extraBody: gatewayBar() + demoScript(s.demo), bodyClass: "has-gateway-bar" });
 }
 
 const sub = (h, lead, body) => `<div class="sub"><h3>${esc(h)}</h3>${lead ? `<p class="lead">${esc(lead)}</p>` : ""}${body}</div>`;
@@ -62,6 +64,26 @@ function hospitalityMain(s) {
       tint: false,
     }),
     section({ ...v, body: ledger(v.rows) + `<p class="lead" style="margin-top:1.5rem">${esc(v.note)}</p>`, tint: true }),
+    section({ ...d, body: ledger(d.rows), tint: false }),
+    section({ ...s.faq, body: faq(s.faq.items) }),
+    closing({ ...s.closing, primary: { label: s.cta.label, href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(s.cta.subject)}` } }),
+  ].join("\n");
+}
+
+function clinicMain(s) {
+  const m = s.mechanics, p = s.privacy, d = s.dashboard;
+  return [
+    hero(s),
+    demoSection(s.demo),
+    section({
+      ...m,
+      body:
+        pipeline(m.steps) +
+        sub(m.questionsHeading, m.questionsLead, questions(m.questions) + `<p class="note">${esc(m.zonesNote)}</p>`) +
+        sub(m.exampleHeading, m.exampleLead, dataTable({ caption: m.exampleCaption, head: m.exampleHead, rows: m.example })),
+      tint: false,
+    }),
+    section({ ...p, body: ledger(p.rows) + `<p class="lead" style="margin-top:1.5rem">${esc(p.note)}</p>`, tint: true }),
     section({ ...d, body: ledger(d.rows), tint: false }),
     section({ ...s.faq, body: faq(s.faq.items) }),
     closing({ ...s.closing, primary: { label: s.cta.label, href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(s.cta.subject)}` } }),
@@ -91,13 +113,14 @@ function realEstateMain(s) {
 
 function verticalPage(s, mainFn = hero) {
   const main = mainFn(s);
-  return page(s, { indexable, header: verticalHeader(s, liveNav(s.nav, main)), main, extraBody: s.demo ? demoScript : "" });
+  return page(s, { indexable, header: verticalHeader(s, liveNav(s.nav, main)), main, extraBody: s.demo ? demoScript(s.demo) : "" });
 }
 
 const sites = [
   ["root", rootPage()],
   ["real-estate", verticalPage(realEstate, realEstateMain)],
   ["hospitality", verticalPage(hospitality, hospitalityMain)],
+  ["clinic", verticalPage(clinic, clinicMain)],
 ];
 
 /** Screenshots come from the live landing too; only the site that shows them gets them. */
@@ -105,7 +128,7 @@ const EXTRA_ASSETS = {
   "real-estate": ["product-queue-1280.jpg", "product-queue-2560.jpg"],
 };
 
-const cssFor = (id) => ["base.css", "components.css", ...(id === "hospitality" ? ["demo.css"] : [])]
+const cssFor = (id) => ["base.css", "components.css", ...(id === "hospitality" || id === "clinic" || id === "root" ? ["demo.css"] : [])]
   .map((f) => readFileSync(join(here, "shared", f), "utf8")).join("\n");
 
 rmSync(dist, { recursive: true, force: true });
@@ -116,7 +139,7 @@ for (const [id, html] of sites) {
   writeFileSync(join(out, "styles.css"), cssFor(id));
   // Fonts and logo marks come from the live landing, so there is one copy of the brand.
   cpSync(join(repo, "landing", "assets", "fonts"), join(out, "assets", "fonts"), { recursive: true });
-  for (const f of ["kadensio-lockup.svg", "kadensio-lockup-reversed.svg", "kadensio-icon.svg", "kadensio-icon-small.svg"]) {
+  for (const f of ["kadensio-lockup.svg", "kadensio-lockup-reversed.svg", "kadensio-icon.svg", "kadensio-icon-small.svg", "og.png"]) {
     cpSync(join(repo, "landing", "assets", f), join(out, "assets", f));
   }
   for (const f of EXTRA_ASSETS[id] ?? []) cpSync(join(repo, "landing", "assets", f), join(out, "assets", f));
@@ -147,7 +170,7 @@ const SITE_LLMS = {
     name: "Kadensio",
     origin: ORIGINS.root,
     summary:
-      "Kadensio builds conversation infrastructure on the official WhatsApp Business Platform and on voice: deterministic state machines that qualify, route and book, with fixed-arithmetic scoring and no generative model writing the answers. It runs two products, real estate lead qualification and hospitality reservations.",
+      "Kadensio builds conversation infrastructure on the official WhatsApp Business Platform and on voice: deterministic state machines that qualify, route and book, with fixed-arithmetic scoring and no generative model writing the answers. It runs three products: real estate lead qualification, hospitality reservations and dental clinic appointment booking.",
     intro: [
       "One engine, six stages: channel adapter, state machine, scorer, router, integrations, shared inbox. Every reply is a fixed template and every score is deterministic and logged, so the engine cannot invent a price, a unit or a table. Only the vocabulary and the integrations change between industries.",
     ],
@@ -160,6 +183,7 @@ const SITE_LLMS = {
     related: [
       { label: "Kadensio for Real Estate", url: `${ORIGINS["real-estate"]}/`, note: "WhatsApp lead qualification, scoring, routing and viewing booking for brokerages" },
       { label: "Kadensio for Hospitality", url: `${ORIGINS.hospitality}/`, note: "calls and WhatsApp reservations checked against a live floor plan" },
+      { label: "Kadensio for Dental Clinics", url: `${ORIGINS.clinic}/`, note: "WhatsApp appointment booking with real slots from the clinic's own hours" },
     ],
     contact: "yassin@kadensio.com",
   },
@@ -175,6 +199,23 @@ const SITE_LLMS = {
     related: [
       { label: "Kadensio platform", url: `${ORIGINS.root}/`, note: "the engine behind both products, and the company's legal pages" },
       { label: "Kadensio for Real Estate", url: `${ORIGINS["real-estate"]}/`, note: "the same engine for brokerages" },
+      { label: "Kadensio for Dental Clinics", url: `${ORIGINS.clinic}/`, note: "the same engine for appointment booking" },
+    ],
+    contact: "yassin@kadensio.com (book a demo)",
+  },
+  clinic: {
+    name: "Kadensio for Dental Clinics",
+    origin: ORIGINS.clinic,
+    summary:
+      "Kadensio for Dental Clinics books appointments on WhatsApp for dental clinics, in English and Arabic. The assistant asks what the front desk needs (the kind of visit, new or existing patient, how soon, time of day, how the visit is paid), offers real slots from the clinic's own hours and books the one the patient taps. It collects no health information. No generative model decides or writes anything.",
+    intro: [
+      "Everything on this site is the vendor's own product description. It publishes no customer names, clinic counts, uptime or accuracy figures, and no prices; the sample booking on the page is labelled sample data. The booking priority orders the front desk's queue and is not a clinical assessment.",
+    ],
+    pages: [{ file: "index.html", label: "Kadensio for Dental Clinics", note: "how an appointment goes from first message to booked slot, what the assistant asks and never asks, the front desk dashboard, and FAQ" }],
+    related: [
+      { label: "Kadensio platform", url: `${ORIGINS.root}/`, note: "the engine behind every product, and the company's legal pages" },
+      { label: "Kadensio for Real Estate", url: `${ORIGINS["real-estate"]}/`, note: "the same engine for brokerages" },
+      { label: "Kadensio for Hospitality", url: `${ORIGINS.hospitality}/`, note: "the same engine for restaurant reservations" },
     ],
     contact: "yassin@kadensio.com (book a demo)",
   },
@@ -194,8 +235,10 @@ const dir = (id) => join(dist, id);
 writeLlms(dir("root"), SITE_LLMS.root, [
   { dir: dir("real-estate-landing"), origin: ORIGINS["real-estate"], pages: SITE_LLMS["real-estate"].pages.map((p) => p.file) },
   { dir: dir("hospitality"), origin: ORIGINS.hospitality, pages: ["index.html"] },
+  { dir: dir("clinic"), origin: ORIGINS.clinic, pages: ["index.html"] },
 ]);
 writeLlms(dir("hospitality"), SITE_LLMS.hospitality);
+writeLlms(dir("clinic"), SITE_LLMS.clinic);
 writeLlms(
   dir("real-estate-landing"),
   { ...SITE_LLMS["real-estate"], intro: [], contact: "yassin@kadensio.com" },
@@ -204,6 +247,6 @@ writeLlms(
 );
 
 // Hashed file names, last, once every file is in place.
-for (const id of ["root", "real-estate", "real-estate-landing", "hospitality"]) fingerprint(join(dist, id));
+for (const id of ["root", "real-estate", "real-estate-landing", "hospitality", "clinic"]) fingerprint(join(dist, id));
 
 console.log(`built ${sites.map(([id]) => id).join(", ")} (${indexable ? "indexable" : "noindex"}) -> sites/dist`);

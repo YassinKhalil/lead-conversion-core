@@ -8,13 +8,17 @@ import { esc } from "./ui.mjs";
 const arrow = `<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>`;
 
 export function demoSection(d) {
+  const first = d.verticals[0];
+  const starts = d.verticals
+    .map((v) => `<button class="btn btn-primary btn-lg demo-begin" type="button" data-vertical="${esc(v.id)}">${esc(v.start)} ${arrow}</button>`)
+    .join("");
   return `<section class="section section-tint try" id="${esc(d.id)}" aria-labelledby="try-h">
   <div class="wrap">
     <h2 id="try-h" class="try-h">${esc(d.h2)}</h2>
     <p class="lead">${esc(d.lead)}</p>
     <div class="demo">
       <div class="demo-chat" id="demo-chat">
-        <div class="demo-head"><span class="demo-dot" aria-hidden="true"></span> ${esc(d.venue)} <span class="demo-tag">Demo</span></div>
+        <div class="demo-head"><span class="demo-dot" aria-hidden="true"></span> <span id="demo-venue-name">${esc(first.venue)}</span> <span class="demo-tag">Demo</span></div>
         <div class="demo-thread" id="demo-thread" role="log" aria-live="polite" aria-label="${esc(d.threadLabel)}"></div>
         <div class="demo-options" id="demo-options"></div>
         <form class="demo-form" id="demo-form" autocomplete="off">
@@ -22,44 +26,52 @@ export function demoSection(d) {
           <input class="demo-input" id="demo-input" type="text" maxlength="300" placeholder="${esc(d.placeholder)}" disabled>
           <button class="btn btn-primary" id="demo-send" type="submit" disabled>${esc(d.send)}</button>
         </form>
-        <div class="demo-start" id="demo-start">
-          <button class="btn btn-primary btn-lg" id="demo-begin" type="button">${esc(d.start)} ${arrow}</button>
-        </div>
+        <div class="demo-start" id="demo-start">${d.pickLabel ? `<p class="demo-pick">${esc(d.pickLabel)}</p>` : ""}<div class="demo-starts">${starts}</div></div>
       </div>
       <div class="demo-result" id="demo-result" aria-live="polite">
-        <h3 class="demo-result-h">${esc(d.resultHeading)}</h3>
-        <p class="demo-empty" id="demo-empty">${esc(d.empty)}</p>
+        <h3 class="demo-result-h" id="demo-result-h">${esc(first.resultHeading)}</h3>
+        <p class="demo-empty" id="demo-empty">${esc(first.empty)}</p>
         <div class="demo-card" id="demo-card" hidden>
           <div class="demo-card-top">
             <span class="demo-temp" id="demo-temp"></span>
-            <span class="demo-venue" id="demo-venue"></span>
+            <span class="demo-venue" id="demo-venue" hidden></span>
+            <span class="demo-score" id="demo-score-wrap" hidden><span id="demo-score"></span><span class="demo-of">/100</span></span>
           </div>
           <dl class="demo-answers" id="demo-answers"></dl>
+          <div id="demo-why" hidden>
+            <h4 class="demo-sub">${esc(d.whyLabel ?? "Why this score")}</h4>
+            <ul class="demo-factors" id="demo-factors"></ul>
+          </div>
           <p class="demo-next"><strong>${esc(d.nextLabel)}</strong> <span id="demo-next"></span></p>
           <button class="link-arrow demo-again" id="demo-again" type="button">${esc(d.again)}</button>
         </div>
       </div>
     </div>
-    <p class="demo-note">${esc(d.note)}</p>
+    <p class="demo-note" id="demo-note">${esc(d.note)}</p>
   </div>
 </section>`;
 }
 
-export const demoScript = `<script>
+/** Client script. `d.verticals` carries each industry's endpoint and result copy; one entry means no picker. */
+export function demoScript(d) {
+  const config = JSON.stringify(
+    d.verticals.map((v) => ({ id: v.id, endpoint: v.endpoint, venue: v.venue, resultHeading: v.resultHeading, empty: v.empty })),
+  ).replace(/</g, "\\u003c");
+  return `<script>
 (function () {
   'use strict';
-  var ENDPOINT = '/api/demo/turn';
+  var VERTICALS = ${config};
   var thread = document.getElementById('demo-thread');
   var optionsBox = document.getElementById('demo-options');
   var form = document.getElementById('demo-form');
   var input = document.getElementById('demo-input');
   var send = document.getElementById('demo-send');
   var start = document.getElementById('demo-start');
-  var begin = document.getElementById('demo-begin');
   var empty = document.getElementById('demo-empty');
   var card = document.getElementById('demo-card');
-  if (!thread || !begin) return;
+  if (!thread || !start) return;
 
+  var current = VERTICALS[0];
   var state = '';
   var busy = false;
   var typingEl = null;
@@ -67,6 +79,7 @@ export const demoScript = `<script>
   function bubble(text, who) {
     var el = document.createElement('div');
     el.className = 'bubble bubble-' + who;
+    el.dir = 'auto';
     el.textContent = text;
     thread.appendChild(el);
     thread.scrollTop = thread.scrollHeight;
@@ -102,6 +115,7 @@ export const demoScript = `<script>
         b.type = 'button';
         b.className = 'demo-opt';
         b.textContent = opt.label;
+        b.dir = 'auto';
         b.addEventListener('click', function () { turn({ optionId: opt.id }, opt.label); });
         optionsBox.appendChild(b);
       })(list[i]);
@@ -114,16 +128,21 @@ export const demoScript = `<script>
     if (free) input.focus();
   }
 
-  function fillSummary(sum) {
-    var badge = document.getElementById('demo-temp');
-    badge.textContent = sum.status === 'confirmed' ? 'Table held' : 'Sent to the venue';
-    badge.className = 'demo-temp demo-temp-' + (sum.status === 'confirmed' ? 'ok' : 'warm');
-    document.getElementById('demo-venue').textContent = sum.venue;
-    document.getElementById('demo-next').textContent = sum.nextStep;
-    var r = sum.reservation;
-    var rows = [['Party size', String(r.partySize)], ['Date', r.date], ['Shift', r.shift], ['Zone', r.zone],
-      ['Guest language', sum.language], ['Deposit', sum.deposit]];
-    var dl = document.getElementById('demo-answers');
+  function money(n) {
+    var v = Number(n);
+    if (!isFinite(v) || v <= 0) return n || '';
+    return v >= 1000000 ? (v / 1000000) + 'M' : v.toLocaleString('en-US');
+  }
+  function budgetText(a) {
+    if (!a.budgetMax) return '';
+    if (Number(a.budgetMax) >= 50000000) return 'Over ' + money(a.budgetMin) + ' EGP';
+    if (Number(a.budgetMin) === 0) return 'Under ' + money(a.budgetMax) + ' EGP';
+    return money(a.budgetMin) + ' to ' + money(a.budgetMax) + ' EGP';
+  }
+
+  var el = function (id) { return document.getElementById(id); };
+  function fillRows(rows) {
+    var dl = el('demo-answers');
     dl.textContent = '';
     for (var i = 0; i < rows.length; i++) {
       if (!rows[i][1]) continue;
@@ -131,6 +150,77 @@ export const demoScript = `<script>
       var dd = document.createElement('dd'); dd.textContent = rows[i][1];
       dl.appendChild(dt); dl.appendChild(dd);
     }
+  }
+
+  var RENDER = {
+    'real-estate': function (sum) {
+      var t = el('demo-temp');
+      t.textContent = sum.temperature;
+      t.className = 'demo-temp demo-temp-' + sum.temperature;
+      el('demo-venue').hidden = true;
+      el('demo-score-wrap').hidden = false;
+      el('demo-score').textContent = sum.score;
+      var a = sum.answers;
+      fillRows([['Location', a.location], ['Unit', a.unitType], ['Budget', budgetText(a)],
+        ['Payment', a.paymentPlan], ['Down payment', a.downPayment], ['Timeline', a.timeline],
+        ['Purpose', a.purpose], ['Site visit', a.siteVisit]]);
+      var ul = el('demo-factors');
+      ul.textContent = '';
+      for (var j = 0; j < sum.factors.length; j++) {
+        var f = sum.factors[j];
+        var li = document.createElement('li');
+        var pts = document.createElement('span'); pts.className = 'demo-pts'; pts.textContent = '+' + f.points;
+        li.appendChild(pts);
+        li.appendChild(document.createTextNode(' ' + f.reason));
+        ul.appendChild(li);
+      }
+      el('demo-why').hidden = false;
+      el('demo-next').textContent = sum.nextStep;
+    },
+    'clinic': function (sum) {
+      var t = el('demo-temp');
+      var tag = { hot: 'Urgent', warm: 'Soon', cold: 'Routine' };
+      t.textContent = tag[sum.temperature] || sum.temperature;
+      t.className = 'demo-temp demo-temp-' + sum.temperature;
+      var v = el('demo-venue');
+      v.hidden = false;
+      v.textContent = sum.clinic;
+      el('demo-score-wrap').hidden = false;
+      el('demo-score').textContent = sum.score;
+      var a = sum.answers;
+      fillRows([['Treatment', a.service], ['Patient', a.patientType], ['How soon', a.urgency], ['Time of day', a.timePreference],
+        ['Paid', a.coverage], ['Appointment', sum.appointment || 'No slot picked: the team calls'], ['Patient language', sum.language]]);
+      var ul = el('demo-factors');
+      ul.textContent = '';
+      for (var j = 0; j < sum.factors.length; j++) {
+        var f = sum.factors[j];
+        var li = document.createElement('li');
+        var pts = document.createElement('span'); pts.className = 'demo-pts'; pts.textContent = '+' + f.points;
+        li.appendChild(pts);
+        li.appendChild(document.createTextNode(' ' + f.reason));
+        ul.appendChild(li);
+      }
+      el('demo-why').hidden = false;
+      el('demo-next').textContent = sum.nextStep;
+    },
+    'hospitality': function (sum) {
+      var t = el('demo-temp');
+      t.textContent = sum.status === 'confirmed' ? 'Table held' : 'Sent to the venue';
+      t.className = 'demo-temp demo-temp-' + (sum.status === 'confirmed' ? 'ok' : 'warm');
+      var v = el('demo-venue');
+      v.hidden = false;
+      v.textContent = sum.venue;
+      el('demo-score-wrap').hidden = true;
+      var r = sum.reservation;
+      fillRows([['Party size', String(r.partySize)], ['Date', r.date], ['Shift', r.shift], ['Zone', r.zone],
+        ['Guest language', sum.language], ['Deposit', sum.deposit]]);
+      el('demo-why').hidden = true;
+      el('demo-next').textContent = sum.nextStep;
+    }
+  };
+
+  function fillSummary(sum) {
+    RENDER[current.id](sum);
     empty.hidden = true;
     card.hidden = false;
     card.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -153,7 +243,7 @@ export const demoScript = `<script>
     if (payload.optionId !== undefined) body.optionId = payload.optionId;
     var started = Date.now();
     var typingTimer = setTimeout(showTyping, 200);
-    fetch(ENDPOINT, {
+    fetch(current.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -177,6 +267,7 @@ export const demoScript = `<script>
         showOptions([]);
         form.hidden = true;
         input.disabled = true; send.disabled = true;
+        // Let the closing message be read before the result appears.
         if (r.data.summary) setTimeout(function () { fillSummary(r.data.summary); }, 500);
       } else {
         showOptions(r.data.reply.options || []);
@@ -186,6 +277,16 @@ export const demoScript = `<script>
       hideTyping();
       fail('The demo is unavailable right now. Please try again in a moment.');
     });
+  }
+
+  function choose(id) {
+    for (var i = 0; i < VERTICALS.length; i++) if (VERTICALS[i].id === id) current = VERTICALS[i];
+    el('demo-venue-name').textContent = current.venue;
+    el('demo-result-h').textContent = current.resultHeading;
+    empty.textContent = current.empty;
+    state = '';
+    start.hidden = true;
+    turn({});
   }
 
   function reset() {
@@ -201,7 +302,10 @@ export const demoScript = `<script>
 
   form.hidden = true;
   optionsBox.hidden = true;
-  begin.addEventListener('click', function () { start.hidden = true; turn({}); });
+  var begins = document.querySelectorAll('.demo-begin');
+  for (var k = 0; k < begins.length; k++) {
+    (function (btn) { btn.addEventListener('click', function () { choose(btn.getAttribute('data-vertical')); }); })(begins[k]);
+  }
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var v = input.value.trim();
@@ -209,6 +313,7 @@ export const demoScript = `<script>
     input.value = '';
     turn({ text: v }, v);
   });
-  document.getElementById('demo-again').addEventListener('click', reset);
+  el('demo-again').addEventListener('click', reset);
 })();
 </script>`;
+}

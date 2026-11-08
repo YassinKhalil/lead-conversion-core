@@ -8,9 +8,24 @@
 # 4 hour browser cache, which is what let a stale stylesheet meet new HTML.
 
 kadensio.com, www.kadensio.com {
+	import umami_collect
 	# Kept so a cached copy of the old landing can still submit its waitlist form.
 	handle /api/waitlist {
 		rewrite * /public/waitlist
+		reverse_proxy 127.0.0.1:8084
+	}
+
+	# The "Try it now" demo on the platform page. Stateless: runs the engine, stores nothing.
+	handle /api/demo/real-estate {
+		rewrite * /public/demo/turn
+		reverse_proxy 127.0.0.1:8084
+	}
+	handle /api/demo/hospitality {
+		rewrite * /public/demo/hospitality/turn
+		reverse_proxy 127.0.0.1:8084
+	}
+	handle /api/demo/clinic {
+		rewrite * /public/demo/clinic/turn
 		reverse_proxy 127.0.0.1:8084
 	}
 

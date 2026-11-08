@@ -228,4 +228,11 @@ A copy of the Caddy file from before the split is in `/var/www/.kadensio-publish
 
 ### Which view a tenant sees
 
-See `dashboard/src/profile/README.md`. Every tenant is real estate until its `clientKey` is added to `CLIENT_VERTICALS`.
+See `dashboard/src/profile/README.md`. The API sends the client's `vertical` (`real_estate`, `hospitality` or `clinic`, set by the tenant provisioning scripts) and the dashboard picks that view; a tenant with no match is real estate. Clinic tenants also get an Appointments screen.
+
+## Analytics tag (added 2026-10-21)
+
+`app.kadensio.com/app` is tracked by the self-hosted Umami at `/srv/umami` (first-party, cookie-free, served through `/_a/` by Caddy).
+Expo's web export writes `index.html` itself, so after every export add the tag to the new release:
+
+    /root/work/addtag.py kadensio-app /var/www/kadensio-dashboard/current/index.html

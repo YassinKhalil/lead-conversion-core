@@ -5,6 +5,7 @@ import { DashboardLeadDetailService } from '../../services/dashboard/lead-detail
 import { DashboardLeadListService } from '../../services/dashboard/lead-list-service.js';
 import { DashboardNotificationService } from '../../services/dashboard/notification-service.js';
 import { DashboardReservationService } from '../../services/dashboard/reservation-service.js';
+import { DashboardAppointmentService } from '../../services/dashboard/appointment-service.js';
 import { DashboardSessionService } from '../../services/dashboard/session-service.js';
 import { dashboardEventBus } from '../../services/dashboard/stream-service.js';
 import { DashboardSummaryService } from '../../services/dashboard/summary-service.js';
@@ -14,6 +15,7 @@ import { createAuthHook, sendDashboardError } from './context.js';
 import { dashboardDirectoryRoutes } from './directory.js';
 import { dashboardLeadRoutes } from './leads.js';
 import { dashboardNotificationRoutes } from './notifications.js';
+import { dashboardAppointmentRoutes } from './appointments.js';
 import { dashboardReservationRoutes } from './reservations.js';
 import { dashboardStreamRoutes } from './stream.js';
 import { dashboardSummaryRoutes } from './summary.js';
@@ -35,6 +37,7 @@ export async function dashboardRoutes(app: FastifyInstance): Promise<void> {
   const directory = new DashboardDirectoryService();
   const summary = new DashboardSummaryService();
   const reservations = new DashboardReservationService();
+  const appointments = new DashboardAppointmentService();
 
   app.decorateRequest('dashboardSession', null);
   app.addHook('preHandler', createAuthHook(sessions));
@@ -46,6 +49,7 @@ export async function dashboardRoutes(app: FastifyInstance): Promise<void> {
   await dashboardUserRoutes(app, { users });
   await dashboardLeadRoutes(app, { list, detail, actions });
   await dashboardReservationRoutes(app, { reservations, actions });
+  await dashboardAppointmentRoutes(app, { appointments });
   await dashboardNotificationRoutes(app, { notifications });
   await dashboardDirectoryRoutes(app, { directory });
   await dashboardSummaryRoutes(app, { summary });

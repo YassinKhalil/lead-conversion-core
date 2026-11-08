@@ -12,7 +12,7 @@
  * in every vertical and take no profile.
  */
 
-export type VerticalId = 'real_estate' | 'hospitality';
+export type VerticalId = 'real_estate' | 'hospitality' | 'clinic';
 
 /** Nouns used in headings, navigation and empty states. */
 export interface Terms {
@@ -70,11 +70,17 @@ export interface TenantProfile {
   summary: SummaryPart[];
   qualificationTitle: string;
   qualificationEmptyDetail: string;
-  /** The scripted call-prep line and the budget currency only make sense for real estate; the reservations screen only for hospitality. */
-  features: { openingLine: boolean; currency: boolean; reservations: boolean };
+  /** The scripted call-prep line and the budget currency only make sense for real estate; the reservations screen only for hospitality; the appointments screen only for clinics. */
+  features: { openingLine: boolean; currency: boolean; reservations: boolean; appointments: boolean };
   list: ListCopy;
   manage: ManageCopy;
   questionLabels: Record<string, string>;
+  /**
+   * Readable text for a stored answer value, by question key. A value with no
+   * entry is shown as stored. Needed where an answer is a configuration value
+   * (`this_week`) rather than words a person typed.
+   */
+  valueLabels?: Record<string, Record<string, string>>;
   factorLabels: Record<string, string>;
   stageLabels: Record<string, string>;
   eventLabels: Record<string, string>;

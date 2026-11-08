@@ -1,4 +1,4 @@
-import type { BaseLanguage } from './types.js';
+import type { LocalizedText } from './types.js';
 
 /**
  * Meta caps an interactive list row title at 24 characters and silently
@@ -13,6 +13,10 @@ const HOUR_PATTERN = /^([01]?\d|2[0-3]):([0-5]\d)$/;
 const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const WEEKDAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WEEKDAYS_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const WEEKDAYS_CA = ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'];
+const MONTHS_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const MONTHS_CA = ['gen', 'feb', 'març', 'abr', 'maig', 'juny', 'jul', 'ago', 'set', 'oct', 'nov', 'des'];
 const MONTHS_AR = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
@@ -28,7 +32,7 @@ export interface GeneratedSlot {
   startsAt: string;
   localDate: string;
   localTime: string;
-  labels: Record<BaseLanguage, string>;
+  labels: LocalizedText;
 }
 
 interface ZonedParts {
@@ -132,7 +136,7 @@ function fitTitle(full: string, compact: string): string {
   return full.length <= SLOT_TITLE_MAX_LENGTH ? full : compact;
 }
 
-function slotLabels(dateString: string, time: string): Record<BaseLanguage, string> {
+function slotLabels(dateString: string, time: string): LocalizedText {
   const weekday = weekdayIndex(dateString);
   const [, month = '1', day = '1'] = dateString.split('-');
   const dayNumber = String(Number(day));
@@ -145,6 +149,14 @@ function slotLabels(dateString: string, time: string): Record<BaseLanguage, stri
     Arabic: fitTitle(
       `${WEEKDAYS_AR[weekday]} ${dayNumber} ${MONTHS_AR[monthIndex]} ${time}`,
       `${WEEKDAYS_AR[weekday]} ${dayNumber}/${Number(month)} ${time}`,
+    ),
+    Spanish: fitTitle(
+      `${WEEKDAYS_ES[weekday]} ${dayNumber} ${MONTHS_ES[monthIndex]} ${time}`,
+      `${WEEKDAYS_ES[weekday]} ${dayNumber}/${Number(month)} ${time}`,
+    ),
+    Catalan: fitTitle(
+      `${WEEKDAYS_CA[weekday]} ${dayNumber} ${MONTHS_CA[monthIndex]} ${time}`,
+      `${WEEKDAYS_CA[weekday]} ${dayNumber}/${Number(month)} ${time}`,
     ),
   };
 }
@@ -197,7 +209,7 @@ export function generateAppointmentSlots(input: {
 }
 
 /** Rebuilds the row title for an already-persisted slot instant. */
-export function formatSlotLabel(startsAt: string, timezone: string): Record<BaseLanguage, string> {
+export function formatSlotLabel(startsAt: string, timezone: string): LocalizedText {
   const parts = zonedParts(new Date(startsAt), timezone || 'Africa/Cairo');
   const dateString = [
     String(parts.year).padStart(4, '0'),

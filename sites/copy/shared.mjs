@@ -1,9 +1,10 @@
-// Facts every site agrees on. One place, so the three sites cannot drift.
+// Facts every site agrees on. One place, so the four sites cannot drift.
 
 export const ORIGINS = {
   root: "https://kadensio.com",
   "real-estate": "https://real-estate.kadensio.com",
   hospitality: "https://hospitality.kadensio.com",
+  clinic: "https://clinic.kadensio.com",
 };
 
 export const CONTACT_EMAIL = "yassin@kadensio.com";
@@ -26,6 +27,13 @@ export const VERTICALS = [
     host: "hospitality.kadensio.com",
     url: ORIGINS.hospitality,
     line: "Answer calls and threads. Seat real tables.",
+  },
+  {
+    id: "clinic",
+    name: "Dental Clinics",
+    host: "clinic.kadensio.com",
+    url: ORIGINS.clinic,
+    line: "Answer every enquiry. Book dental appointments.",
   },
 ];
 

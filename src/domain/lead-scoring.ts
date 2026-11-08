@@ -37,11 +37,11 @@ const REQUIRED_ANSWERS = [
   'q_site_visit',
 ];
 
-function sha256Hex(value: string): string {
+export function sha256Hex(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function stableJson(value: unknown): string {
+export function stableJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
   if (value && typeof value === 'object') {
     return `{${Object.entries(value as Record<string, unknown>)
@@ -107,7 +107,7 @@ function unitTypePoints(value: string): number {
   return value ? 3 : 0;
 }
 
-function temperature(score: number): 'cold' | 'warm' | 'hot' {
+export function temperature(score: number): 'cold' | 'warm' | 'hot' {
   if (score >= 75) return 'hot';
   if (score >= 45) return 'warm';
   return 'cold';

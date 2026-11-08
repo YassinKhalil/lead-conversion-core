@@ -10,6 +10,7 @@ import { internalRoutes } from './routes/internal.js';
 import { leadIngressRoutes } from './routes/lead-ingress.js';
 import { metaWebhookRoutes } from './routes/meta-webhooks.js';
 import { demoRoutes } from './routes/public-demo.js';
+import { clinicDemoRoutes } from './routes/public-demo-clinic.js';
 import { hospitalityDemoRoutes } from './routes/public-demo-hospitality.js';
 import { waitlistRoutes } from './routes/waitlist.js';
 
@@ -78,6 +79,7 @@ export async function buildApp() {
   await app.register(waitlistRoutes);
   await app.register(demoRoutes);
   await app.register(hospitalityDemoRoutes);
+  await app.register(clinicDemoRoutes);
   if (env.DASHBOARD_API_ENABLED) {
     await app.register(dashboardRoutes);
   }

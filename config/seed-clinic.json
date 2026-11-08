@@ -1,0 +1,538 @@
+{
+  "industry": "clinic",
+  "clientRecordId": null,
+  "languages": [
+    "English",
+    "Arabic"
+  ],
+  "questions": [
+    {
+      "id": "recCQ000000000001",
+      "fields": {
+        "Question Key": "q_permission",
+        "Stage Key": "awaiting_permission",
+        "Saves To": "q_permission",
+        "Question Type": "Buttons",
+        "Order": 1,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "Hello {{lead_name}} 👋 This is the assistant of {{company_name}}. May I ask a few quick questions to book your dental appointment?\n\nIf this is a medical emergency, call your local emergency number now. Please do not send medical details in this chat.",
+        "Arabic": "أهلاً {{lead_name}} 👋 معاك مساعد {{company_name}}. ممكن أسألك كام سؤال سريع عشان نحجزلك ميعاد في العيادة؟\n\nلو دي حالة طوارئ طبية، اتصل برقم الطوارئ في بلدك فوراً. ومن فضلك ما تبعتش تفاصيل طبية على الشات."
+      }
+    },
+    {
+      "id": "recCQ000000000002",
+      "fields": {
+        "Question Key": "q_service",
+        "Stage Key": "asking_service",
+        "Saves To": "q_service",
+        "Question Type": "List",
+        "Order": 2,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "What is the visit for?",
+        "Arabic": "الزيارة لإيه؟"
+      }
+    },
+    {
+      "id": "recCQ000000000003",
+      "fields": {
+        "Question Key": "q_patient_type",
+        "Stage Key": "asking_patient_type",
+        "Saves To": "q_patient_type",
+        "Question Type": "Buttons",
+        "Order": 3,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "Have you been to us before?",
+        "Arabic": "هل زرتنا قبل كده؟"
+      }
+    },
+    {
+      "id": "recCQ000000000004",
+      "fields": {
+        "Question Key": "q_urgency",
+        "Stage Key": "asking_urgency",
+        "Saves To": "q_urgency",
+        "Question Type": "Buttons",
+        "Order": 4,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "How soon would you like to be seen?",
+        "Arabic": "عايز الميعاد إمتى؟"
+      }
+    },
+    {
+      "id": "recCQ000000000005",
+      "fields": {
+        "Question Key": "q_time_pref",
+        "Stage Key": "asking_time_pref",
+        "Saves To": "q_time_pref",
+        "Question Type": "Buttons",
+        "Order": 5,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "What time of day suits you?",
+        "Arabic": "إيه الوقت المناسب ليك؟"
+      }
+    },
+    {
+      "id": "recCQ000000000006",
+      "fields": {
+        "Question Key": "q_coverage",
+        "Stage Key": "asking_coverage",
+        "Saves To": "q_coverage",
+        "Question Type": "Buttons",
+        "Order": 6,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "How will the visit be paid?",
+        "Arabic": "هتدفع إزاي؟"
+      }
+    },
+    {
+      "id": "recCQ000000000007",
+      "fields": {
+        "Question Key": "q_book_now",
+        "Stage Key": "asking_book_now",
+        "Saves To": "q_book_now",
+        "Question Type": "Buttons",
+        "Order": 7,
+        "Active": true,
+        "Parser Hint": "none",
+        "Industry": "clinic",
+        "Client": [],
+        "English": "Shall I show you the available times now?",
+        "Arabic": "تحب أوريك المواعيد المتاحة دلوقتي؟"
+      }
+    }
+  ],
+  "options": [
+    {
+      "id": "recCO000000000001",
+      "fields": {
+        "Question": [
+          "recCQ000000000001"
+        ],
+        "Option Key": "perm_yes",
+        "Value": "yes",
+        "Order": 1,
+        "Active": true,
+        "English": "Yes",
+        "Arabic": "أيوه"
+      }
+    },
+    {
+      "id": "recCO000000000002",
+      "fields": {
+        "Question": [
+          "recCQ000000000001"
+        ],
+        "Option Key": "perm_no",
+        "Value": "no",
+        "Order": 2,
+        "Active": true,
+        "English": "Not now",
+        "Arabic": "مش دلوقتي"
+      }
+    },
+    {
+      "id": "recCO000000000003",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_consultation",
+        "Value": "consultation",
+        "Order": 1,
+        "Active": true,
+        "English": "Consultation",
+        "Arabic": "استشارة"
+      }
+    },
+    {
+      "id": "recCO000000000004",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_checkup",
+        "Value": "checkup",
+        "Order": 2,
+        "Active": true,
+        "English": "Check-up",
+        "Arabic": "كشف"
+      }
+    },
+    {
+      "id": "recCO000000000005",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_cleaning",
+        "Value": "cleaning",
+        "Order": 3,
+        "Active": true,
+        "English": "Cleaning",
+        "Arabic": "تنضيف أسنان"
+      }
+    },
+    {
+      "id": "recCO000000000006",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_filling",
+        "Value": "filling",
+        "Order": 4,
+        "Active": true,
+        "English": "Filling",
+        "Arabic": "حشو"
+      }
+    },
+    {
+      "id": "recCO000000000007",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_whitening",
+        "Value": "whitening",
+        "Order": 5,
+        "Active": true,
+        "English": "Whitening",
+        "Arabic": "تبييض"
+      }
+    },
+    {
+      "id": "recCO000000000008",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_braces",
+        "Value": "braces",
+        "Order": 6,
+        "Active": true,
+        "English": "Braces",
+        "Arabic": "تقويم"
+      }
+    },
+    {
+      "id": "recCO000000000009",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_implants",
+        "Value": "implants",
+        "Order": 7,
+        "Active": true,
+        "English": "Implants",
+        "Arabic": "زراعة أسنان"
+      }
+    },
+    {
+      "id": "recCO000000000010",
+      "fields": {
+        "Question": [
+          "recCQ000000000002"
+        ],
+        "Option Key": "service_other",
+        "Value": "other",
+        "Order": 8,
+        "Active": true,
+        "English": "Something else",
+        "Arabic": "حاجة تانية"
+      }
+    },
+    {
+      "id": "recCO000000000011",
+      "fields": {
+        "Question": [
+          "recCQ000000000003"
+        ],
+        "Option Key": "patient_new",
+        "Value": "new",
+        "Order": 1,
+        "Active": true,
+        "English": "New patient",
+        "Arabic": "مريض جديد"
+      }
+    },
+    {
+      "id": "recCO000000000012",
+      "fields": {
+        "Question": [
+          "recCQ000000000003"
+        ],
+        "Option Key": "patient_existing",
+        "Value": "existing",
+        "Order": 2,
+        "Active": true,
+        "English": "Existing patient",
+        "Arabic": "مريض حالي"
+      }
+    },
+    {
+      "id": "recCO000000000013",
+      "fields": {
+        "Question": [
+          "recCQ000000000004"
+        ],
+        "Option Key": "urgency_asap",
+        "Value": "asap",
+        "Order": 1,
+        "Active": true,
+        "English": "As soon as possible",
+        "Arabic": "في أقرب وقت"
+      }
+    },
+    {
+      "id": "recCO000000000014",
+      "fields": {
+        "Question": [
+          "recCQ000000000004"
+        ],
+        "Option Key": "urgency_this_week",
+        "Value": "this_week",
+        "Order": 2,
+        "Active": true,
+        "English": "This week",
+        "Arabic": "الأسبوع ده"
+      }
+    },
+    {
+      "id": "recCO000000000015",
+      "fields": {
+        "Question": [
+          "recCQ000000000004"
+        ],
+        "Option Key": "urgency_flexible",
+        "Value": "flexible",
+        "Order": 3,
+        "Active": true,
+        "English": "Flexible",
+        "Arabic": "مرن"
+      }
+    },
+    {
+      "id": "recCO000000000016",
+      "fields": {
+        "Question": [
+          "recCQ000000000005"
+        ],
+        "Option Key": "time_morning",
+        "Value": "morning",
+        "Order": 1,
+        "Active": true,
+        "English": "Morning",
+        "Arabic": "الصبح"
+      }
+    },
+    {
+      "id": "recCO000000000017",
+      "fields": {
+        "Question": [
+          "recCQ000000000005"
+        ],
+        "Option Key": "time_afternoon",
+        "Value": "afternoon",
+        "Order": 2,
+        "Active": true,
+        "English": "Afternoon",
+        "Arabic": "بعد الضهر"
+      }
+    },
+    {
+      "id": "recCO000000000018",
+      "fields": {
+        "Question": [
+          "recCQ000000000005"
+        ],
+        "Option Key": "time_any",
+        "Value": "any",
+        "Order": 3,
+        "Active": true,
+        "English": "Either",
+        "Arabic": "أي وقت"
+      }
+    },
+    {
+      "id": "recCO000000000019",
+      "fields": {
+        "Question": [
+          "recCQ000000000006"
+        ],
+        "Option Key": "coverage_private",
+        "Value": "private",
+        "Order": 1,
+        "Active": true,
+        "English": "Private",
+        "Arabic": "دفع خاص"
+      }
+    },
+    {
+      "id": "recCO000000000020",
+      "fields": {
+        "Question": [
+          "recCQ000000000006"
+        ],
+        "Option Key": "coverage_insurance",
+        "Value": "insurance",
+        "Order": 2,
+        "Active": true,
+        "English": "Insurance",
+        "Arabic": "تأمين"
+      }
+    },
+    {
+      "id": "recCO000000000021",
+      "fields": {
+        "Question": [
+          "recCQ000000000006"
+        ],
+        "Option Key": "coverage_unsure",
+        "Value": "unsure",
+        "Order": 3,
+        "Active": true,
+        "English": "Not sure",
+        "Arabic": "مش متأكد"
+      }
+    },
+    {
+      "id": "recCO000000000022",
+      "fields": {
+        "Question": [
+          "recCQ000000000007"
+        ],
+        "Option Key": "book_yes",
+        "Value": "yes",
+        "Order": 1,
+        "Active": true,
+        "English": "Yes, show times",
+        "Arabic": "أيوه، وريني"
+      }
+    },
+    {
+      "id": "recCO000000000023",
+      "fields": {
+        "Question": [
+          "recCQ000000000007"
+        ],
+        "Option Key": "book_no",
+        "Value": "no",
+        "Order": 2,
+        "Active": true,
+        "English": "No, call me",
+        "Arabic": "لا، كلموني"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "recCM000000000001",
+      "fields": {
+        "Message Key": "language_selection",
+        "Active": true,
+        "Client": [],
+        "English": "Welcome! Choose your language.\nأهلاً بيك! اختار لغتك.",
+        "Arabic": "أهلاً بيك! اختار لغتك.\nWelcome! Choose your language."
+      }
+    },
+    {
+      "id": "recCM000000000002",
+      "fields": {
+        "Message Key": "clarify_invalid",
+        "Active": true,
+        "Client": [],
+        "English": "Sorry, I didn't catch that.",
+        "Arabic": "معلش، ما فهمتش. ممكن تعيد؟"
+      }
+    },
+    {
+      "id": "recCM000000000003",
+      "fields": {
+        "Message Key": "paused_ack",
+        "Active": true,
+        "Client": [],
+        "English": "No problem. Write to us whenever you want to book.",
+        "Arabic": "ولا يهمك. ابعتلنا وقت ما تحب تحجز."
+      }
+    },
+    {
+      "id": "recCM000000000004",
+      "fields": {
+        "Message Key": "fallback",
+        "Active": true,
+        "Client": [],
+        "English": "One of our team will continue this conversation shortly.",
+        "Arabic": "حد من فريقنا هيكمل معاك دلوقتي."
+      }
+    },
+    {
+      "id": "recCM000000000005",
+      "fields": {
+        "Message Key": "already_handed_off",
+        "Active": true,
+        "Client": [],
+        "English": "Your request is with our team. We will confirm shortly.",
+        "Arabic": "طلبك مع فريقنا. هنأكدلك قريب."
+      }
+    },
+    {
+      "id": "recCM000000000006",
+      "fields": {
+        "Message Key": "qualified_closing",
+        "Active": true,
+        "Client": [],
+        "English": "Thank you, {{lead_name}}! Our team will contact you shortly to arrange your appointment.",
+        "Arabic": "شكراً يا {{lead_name}}! فريقنا هيتواصل معاك قريب عشان نأكد ميعادك."
+      }
+    },
+    {
+      "id": "recCM000000000007",
+      "fields": {
+        "Message Key": "appointment_slot_offer",
+        "Active": true,
+        "Client": [],
+        "English": "Great 🙌 Pick the time that suits you.",
+        "Arabic": "تمام 🙌 اختار الميعاد المناسب ليك."
+      }
+    },
+    {
+      "id": "recCM000000000008",
+      "fields": {
+        "Message Key": "appointment_booked_ack",
+        "Active": true,
+        "Client": [],
+        "English": "Booked ✅ Your appointment is on {{slot}} at {{company_name}}. Our team will confirm the details. Write here if you need to change it.",
+        "Arabic": "اتحجز ✅ ميعادك {{slot}} في {{company_name}}. فريقنا هيأكدلك التفاصيل. ابعتلنا هنا لو عايز تغيره."
+      }
+    },
+    {
+      "id": "recCM000000000009",
+      "fields": {
+        "Message Key": "appointment_slot_taken",
+        "Active": true,
+        "Client": [],
+        "English": "That time has just been taken 🙏 Please pick another one.",
+        "Arabic": "الميعاد ده اتحجز 🙏 اختار ميعاد تاني لو سمحت."
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import type { ActivityItem, LeadDetail, QualificationAnswer, RoutingRun, ScoreRu
 import { EmptyState } from '@/design/StateBlock';
 import { Text } from '@/design/Text';
 import { color, radius, space } from '@/design/tokens';
-import { eventLabel, factorLabel, questionLabel } from '@/leads/labels';
+import { eventLabel, factorLabel, questionLabel, valueLabel } from '@/leads/labels';
 import { useProfile } from '@/profile/ProfileProvider';
 import { indexAnswers, skipReason } from '@/leads/qualification';
 import { ageAgo, timestamp } from '@/time/format';
@@ -76,7 +76,9 @@ export function QualificationTab({ qualification }: { qualification: LeadDetail[
               {answer.answered ? (
                 <>
                   <Text size="body" autoDirection>
-                    {answer.rawValue || answer.normalizedValue}
+                    {valueLabel(answer.questionKey, answer.normalizedValue, profile) !== answer.normalizedValue
+                      ? valueLabel(answer.questionKey, answer.normalizedValue, profile)
+                      : answer.rawValue || answer.normalizedValue}
                   </Text>
                   {answer.normalizedValue && answer.normalizedValue !== answer.rawValue ? (
                     <Text size="micro" tone="muted" numeric>
@@ -240,7 +242,7 @@ export function RoutingTab({ routingRun }: { routingRun: RoutingRun | null }) {
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.lg, paddingLeft: 30 }}>
-                <MatchFlag label="unit" matched={candidate.unitMatch} />
+                <MatchFlag label={profile.terms.category.toLowerCase()} matched={candidate.unitMatch} />
                 <MatchFlag label="language" matched={candidate.languageMatch} />
                 <MatchFlag label="location" matched={candidate.locationMatch} />
                 <Text size="micro" tone="faint" numeric>
